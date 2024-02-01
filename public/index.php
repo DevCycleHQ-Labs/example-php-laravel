@@ -1,52 +1,55 @@
 <?php
-require_once(__DIR__ . '/../vendor/autoload.php');
-include 'devcycle.php';
 
-use DevCycle\Model\DevCycleUser;
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
 
-$devcycle_client = get_devcycle_client();
-$user_data = new DevCycleUser(array(
-    "user_id"=>"my-user"
-));
+define('LARAVEL_START', microtime(true));
 
-?>
+/*
+|--------------------------------------------------------------------------
+| Check If The Application Is Under Maintenance
+|--------------------------------------------------------------------------
+|
+| If the application is in maintenance / demo mode via the "down" command
+| we will load this file so that any pre-rendered content can be shown
+| instead of starting the framework, which could cause an exception.
+|
+*/
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/images/favicon.svg">
-    <link rel="stylesheet" href="/styles/main.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevCycle PHP Example</title>
-  </head>
+if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+    require $maintenance;
+}
 
-  <body>
-    <div class="App">
-      <div class="App-header">
-        <p>Demo Application</p>
-        <img
-          height="46"
-          src="/images/devcycle-togglebot-full-colour.svg"
-          alt="DevCycle"
-        />
-      </div>
-      
-      <div class="App-wrapper">
-        <?php include('togglebot.php'); ?>
-        <?php include('description.php'); ?>
-      </div>
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| this application. We just need to utilize it! We'll simply require it
+| into the script here so we don't need to manually load our classes.
+|
+*/
 
-      <p>Reload the page to view changes.</p>
-  
-      <a
-        class="App-link"
-        href="https://docs.devcycle.com/sdk/server-side-sdks/php/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        DevCycle PHP SDK Docs
-      </a>
-    </div>
-  </body>
-</html>
+require __DIR__.'/../vendor/autoload.php';
+
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+|
+| Once we have the application, we can handle the incoming request using
+| the application's HTTP kernel. Then, we will send the response back
+| to this client's browser, allowing them to enjoy our application.
+|
+*/
+
+$app = require_once __DIR__.'/../bootstrap/app.php';
+
+$kernel = $app->make(Kernel::class);
+
+$response = $kernel->handle(
+    $request = Request::capture()
+)->send();
+
+$kernel->terminate($request, $response);
