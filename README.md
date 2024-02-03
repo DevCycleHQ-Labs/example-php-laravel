@@ -4,7 +4,7 @@ An example app built using the [DevCycle PHP Server SDK](https://docs.devcycle.c
 
 ## Requirements
 
-PHP 7.3+
+PHP 8.2+
 Composer
 
 ## Creating a Demo Feature
