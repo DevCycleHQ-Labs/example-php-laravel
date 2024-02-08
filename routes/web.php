@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use DevCycle\DevCycleConfiguration;
 use DevCycle\Api\DevCycleClient;
+use DevCycle\Model\DevCycleOptions;
 use DevCycle\Model\DevCycleUser;
-use GuzzleHttp\Client as GuzzleClient;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -19,17 +19,11 @@ use GuzzleHttp\Client as GuzzleClient;
 
 Route::get('/', function () {
 
-    // Configure API key authorization: bearerAuth
-    $config = DevCycleConfiguration::getDefaultConfiguration()->setApiKey(
-        "Authorization",
-        env("DEVCYCLE_SERVER_SDK_KEY")
-    );
+    $options = new DevCycleOptions();
 
     $devcycle_client = new DevCycleClient(
-        $config,
-        // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-        // This is optional, `GuzzleHttp\Client` will be used as default.
-        new GuzzleClient(),
+        sdkKey: env("DEVCYCLE_SERVER_SDK_KEY"),
+        dvcOptions: $options
     );
 
     $user_data = new DevCycleUser(array(
